@@ -5,6 +5,8 @@ call vundle#begin()
 Plugin 'gmarik/vundle'
 
 Plugin 'scrooloose/nerdtree'
+Plugin 'idanarye/vim-merginal'
+Plugin 'junegunn/fzf'
 Plugin 'bling/vim-airline'
 Plugin 'bkad/CamelCaseMotion'
 Plugin 'tpope/vim-fugitive'
@@ -51,16 +53,25 @@ set t_Co=256
 " }}}
 
 " NERDTree {{{
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree ~/git | endif
+nnoremap <silent> <Leader>v :NERDTreeFind<CR>
+nnoremap <leader>h :NERDTree ~/<CR>
+nnoremap <leader>g :NERDTree ~/git<CR>
+
+
 let g:NERDTreeMapChangeRoot =  "`"
+let NERDTreeMapActivateNode='<space>'
 
 nmap <Leader>] :NERDTreeTabsToggle<CR>
+nnoremap <F9> :NERDTreeToggle ~/git
 nnoremap <Space>c :NERDTreeCWD<CR>
 let NERDTreeMinimalUI=1
-let NERDTreeDirArrows=0
+let NERDTreeDirArrows=1
 let NERDTreeQuitOnOpen = 1
 let NERDTreeIgnore=['\.pyc$', '\~$']
 let NERDTreeShowLineNumbers = 1
-let NERDTreeWinSize = 25
+let NERDTreeWinSize = 35
 
 function! NERDTreeQuit()
   redir => buffersoutput
@@ -90,6 +101,7 @@ autocmd WinEnter * call NERDTreeQuit()
 " General {{{
 
 set nocompatible
+set autochdir
 filetype off
 set foldmethod=marker
 set linebreak
@@ -157,10 +169,12 @@ vmap <Leader>P "+P
 vmap y ygv<Esc>
 
 "Reload vimrc
-nmap <F5> :source ~/.vimrc<CR>
+nmap <F5> :source ~/.vim/vimrc<CR>
 
 "New Tab
-nmap <Leader>n :tabnew<CR>
+nmap <Leader>c :tabnew<CR>
+nmap <Leader>x :tabclose<CR>
+nmap <Leader>n :tabNext<CR>
 
 "Paste mode toggle
 set pastetoggle=<F5><F5>
@@ -173,9 +187,25 @@ vnoremap < <<CR>gv
 map <Space>w <Plug>CamelCaseMotion_w
 map <Space>b <Plug>CamelCaseMotion_b
 map <Space>e <Plug>CamelCaseMotion_e
+"Copy to system clipboard with double ''
+vmap '' :w !pbcopy<CR><CR>
+"Map Leader to ,
+let mapleader = ','
 " }}}
+" " add yaml stuffs {{{
+au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+"}}}
+
 
 colorscheme wombat256mod
 
 nnoremap <C-j> :bnext<CR>
 nnoremap <C-k> :bprevious<CR>
+
+" "resize splits{{{
+nnoremap <F1> :exe "vertical resize -10" <CR>
+nnoremap <F2> :exe "vertical resize +10" <CR>
+nnoremap <F3> :exe "resize -10" <CR>
+nnoremap <F4> :exe "resize +10" <CR>
+" }}}
