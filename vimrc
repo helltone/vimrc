@@ -5,8 +5,11 @@ call vundle#begin()
 Plugin 'gmarik/vundle'
 
 Plugin 'scrooloose/nerdtree'
+Plugin 'andrewstuart/vim-kubernetes'
+Plugin 'pearofducks/ansible-vim'
 Plugin 'idanarye/vim-merginal'
 Plugin 'junegunn/fzf'
+Plugin 'junegunn/fzf.vim'
 Plugin 'bling/vim-airline'
 Plugin 'bkad/CamelCaseMotion'
 Plugin 'tpope/vim-fugitive'
@@ -45,6 +48,7 @@ let g:windowswap_map_keys = 0 "prevent default bindings
 let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
 " }}}
 
+let mapleader = ","
 " Airline {{{
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 0 "change 0 to 1 if you have a powerline font
@@ -54,6 +58,7 @@ set t_Co=256
 
 " NERDTree {{{
 autocmd StdinReadPre * let s:std_in=1
+map <leader>r :NERDTreeFind<cr>
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree ~/git | endif
 nnoremap <silent> <Leader>v :NERDTreeFind<CR>
 nnoremap <leader>h :NERDTree ~/<CR>
@@ -62,13 +67,13 @@ nnoremap <leader>g :NERDTree ~/git<CR>
 
 let g:NERDTreeMapChangeRoot =  "`"
 let NERDTreeMapActivateNode='<space>'
+let NERDTreeQuitOnOpen=0
 
 nmap <Leader>] :NERDTreeTabsToggle<CR>
 nnoremap <F9> :NERDTreeToggle ~/git
 nnoremap <Space>c :NERDTreeCWD<CR>
 let NERDTreeMinimalUI=1
 let NERDTreeDirArrows=1
-let NERDTreeQuitOnOpen = 1
 let NERDTreeIgnore=['\.pyc$', '\~$']
 let NERDTreeShowLineNumbers = 1
 let NERDTreeWinSize = 35
@@ -168,7 +173,7 @@ vmap <Leader>P "+P
 "Keep the cursor in the same place after yank
 vmap y ygv<Esc>
 
-"Reload vimrc
+"Reload jkjzR
 nmap <F5> :source ~/.vim/vimrc<CR>
 
 "New Tab
@@ -188,10 +193,9 @@ map <Space>w <Plug>CamelCaseMotion_w
 map <Space>b <Plug>CamelCaseMotion_b
 map <Space>e <Plug>CamelCaseMotion_e
 "Copy to system clipboard with double ''
-vmap '' :w !pbcopy<CR><CR>
+map '' :w !pbcopy<CR><CR>
 "Map Leader to ,
-let mapleader = ','
-" }}}
+nnoremap \ :Find<SPACE>
 " " add yaml stuffs {{{
 au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
@@ -209,3 +213,20 @@ nnoremap <F2> :exe "vertical resize +10" <CR>
 nnoremap <F3> :exe "resize -10" <CR>
 nnoremap <F4> :exe "resize +10" <CR>
 " }}}
+
+" "fuzzy finder and rg search{{{
+" --column: Show column number
+" --line-number: Show line number
+" --no-heading: Do not show file headings in results
+" --fixed-strings: Search term as a literal string
+" --ignore-case: Case insensitive search
+" --no-ignore: Do not respect .gitignore, etc...
+" --hidden: Search hidden files and folders
+" --follow: Follow symlinks
+" --glob: Additional conditions for search (in this case ignore everything in the .git/ folder)
+" --color: Search color options
+command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" '.shellescape(<q-args>), 1, <bang>0)
+
+nnoremap \s :Find<SPACE>
+" }}}
+
