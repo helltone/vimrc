@@ -31,6 +31,7 @@ Plugin 'ervandew/supertab'
 Plugin 'ConradIrwin/vim-bracketed-paste'
 Plugin 'gcmt/wildfire.vim'
 Plugin 'Yggdroot/indentLine'
+Plugin 'yegappan/greplace'
 
 "Front End
 Plugin 'pangloss/vim-javascript'
@@ -230,3 +231,23 @@ command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-h
 nnoremap \s :Find<SPACE>
 " }}}
 
+" Add fzf selected files to quickfix
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
+
+" Toggle quickfix window
+nnoremap <leader>q :copen<cr>
+
+" Toggle Merginal
+nnoremap <leader>w :MerginalToggle<cr>
